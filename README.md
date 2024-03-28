@@ -42,6 +42,16 @@ byakugan_vision --diff "tests/test_images/naruto.jpg,tests/test_images/naruto_mo
 
 <img src="tests/test_images/diff/Diff_naruto_naruto_modified.jpg" style="width: 200px">
 
+Note: The output depends on the order of the images in the tuple. The first image is subtracted from the second image.
+That is why the following command results in a different output:
+
+```bash
+byakugan_vision --diff "tests/test_images/naruto_modified.jpg,tests/test_images/naruto.jpg" --out_dir tests/test_images/diff
+```
+
+<img src="tests/test_images/diff/Diff_naruto_modified_naruto.jpg" style="width: 200px">
+
+
 ### Red Filtered Difference
 
 ```bash
