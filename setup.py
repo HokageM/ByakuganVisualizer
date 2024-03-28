@@ -13,7 +13,8 @@ if __name__ == "__main__":
         setup(description="The ByakuganVisualizer repository hosts a Python tool designed to compare images and "
                           "highlight their differences. It simplifies the process of identifying disparities between "
                           "images, making it ideal for tasks like testing and quality assurance. Additionally, it "
-                          "offers options for customization, which can be helpful for color-blind users.")
+                          "offers options for customization, which can be helpful for color-blind users."
+              long_description_content_type="text/markdown")
     except:  # noqa
         print(
             "\n\nAn error occurred while building the project, "
