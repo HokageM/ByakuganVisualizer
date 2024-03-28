@@ -1,9 +1,6 @@
 name: Python Package Publishing
 
-on:
-  create:
-    tags:
-      - '*'
+on: [push]
 
 jobs:
   publish:
