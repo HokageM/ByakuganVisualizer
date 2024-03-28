@@ -14,7 +14,9 @@ if __name__ == "__main__":
                           "highlight their differences. It simplifies the process of identifying disparities between "
                           "images, making it ideal for tasks like testing and quality assurance. Additionally, it "
                           "offers options for customization, which can be helpful for color-blind users.",
-              long_description_content_type="text/markdown")
+              long_description_content_type="text/markdown",
+              version="0.0.1"
+              )
     except:  # noqa
         print(
             "\n\nAn error occurred while building the project, "
