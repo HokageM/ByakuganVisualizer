@@ -149,6 +149,7 @@ def main(args):
             filtered_image = Image.fromarray(rgb_array.astype('uint8'))
             filtered_image.save(f'{args.out_dir}/Filtered_{image_name}.jpg')
 
+
 def run():
     main(sys.argv[1:])
 
