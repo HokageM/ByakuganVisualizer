@@ -51,14 +51,18 @@ def parse_args(args):
     parser.add_argument(
         '--diff',
         type=parse_tuples,
-        required=True,
         help='String containing a list of tuples "Path_To_Image1a,Path_To_Image2a;Path_To_Image1b,Path_To_Image2b...". '
              'Each tuple contains two paths to images to be compared.'
     )
     parser.add_argument(
+        '--images',
+        type=str,
+        help='List of image names to be manipulated by a filter. E.g.: A,B,C,D'
+    )
+    parser.add_argument(
         '--filter',
-        choices=['red', 'blue', 'green', 'yellow'],
-        help='Filter type (red, blue, green, yellow)'
+        choices=['red', 'blue', 'green', 'yellow', 'deuteranomaly'],
+        help='Filter type (red, blue, green, yellow, deuteranomaly)'
     )
     parser.add_argument(
         '--out_dir',
@@ -77,34 +81,61 @@ def main(args):
         os.makedirs(args.out_dir)
         print(f"Output Directory: '{args.out_dir}' created.")
 
-    for pair in args.diff:
-        pair_name = os.path.basename(pair[0]).split('.')[0] + '_' + os.path.basename(pair[1]).split('.')[0]
+    if args.diff:
+        for pair in args.diff:
+            pair_name = os.path.basename(pair[0]).split('.')[0] + '_' + os.path.basename(pair[1]).split('.')[0]
 
-        image1 = Image.open(pair[0])
-        image2 = Image.open(pair[1])
+            image1 = Image.open(pair[0])
+            image2 = Image.open(pair[1])
 
-        array1 = np.array(image1)
-        array2 = np.array(image2)
+            array1 = np.array(image1)
+            array2 = np.array(image2)
 
-        # Calculate the absolute difference between the two arrays
-        difference_array = np.abs(array1 - array2)
+            # Calculate the absolute difference between the two arrays
+            difference_array = np.abs(array1 - array2)
 
-        if args.filter == 'red':
-            difference_array = ImageFilter.apply_red_filter(difference_array)
-            pair_name += '_red'
-        if args.filter == 'blue':
-            difference_array = ImageFilter.apply_blue_filter(difference_array)
-            pair_name += '_blue'
-        if args.filter == 'green':
-            difference_array = ImageFilter.apply_green_filter(difference_array)
-            pair_name += '_green'
-        if args.filter == 'yellow':
-            difference_array = ImageFilter.apply_yellow_filter(difference_array)
-            pair_name += '_yellow'
+            if args.filter == 'red':
+                difference_array = ImageFilter.apply_red_filter(difference_array)
+                pair_name += '_red'
+            if args.filter == 'blue':
+                difference_array = ImageFilter.apply_blue_filter(difference_array)
+                pair_name += '_blue'
+            if args.filter == 'green':
+                difference_array = ImageFilter.apply_green_filter(difference_array)
+                pair_name += '_green'
+            if args.filter == 'yellow':
+                difference_array = ImageFilter.apply_yellow_filter(difference_array)
+                pair_name += '_yellow'
 
-        difference_image = Image.fromarray(difference_array.astype('uint8'))
-        difference_image.save(f'{args.out_dir}/Diff_{pair_name}.jpg')
+            difference_image = Image.fromarray(difference_array.astype('uint8'))
+            difference_image.save(f'{args.out_dir}/Diff_{pair_name}.jpg')
 
+    if args.images:
+        args.images = args.images.split(',')
+        for img in args.images:
+            image_name = os.path.basename(img).split('.')[0]
+
+            image = Image.open(img)
+            rgb_array = np.array(image)
+
+            if args.filter == 'red':
+                rgb_array = ImageFilter.apply_red_filter(rgb_array)
+                image_name += '_red'
+            if args.filter == 'blue':
+                rgb_array = ImageFilter.apply_blue_filter(rgb_array)
+                image_name += '_blue'
+            if args.filter == 'green':
+                rgb_array = ImageFilter.apply_green_filter(rgb_array)
+                image_name += '_green'
+            if args.filter == 'yellow':
+                rgb_array = ImageFilter.apply_yellow_filter(rgb_array)
+                image_name += '_yellow'
+            if args.filter == 'deuteranomaly':
+                rgb_array = ImageFilter.adjust_for_deuteranomaly(rgb_array)
+                image_name += '_deuteranomaly'
+
+            filtered_image = Image.fromarray(rgb_array.astype('uint8'))
+            filtered_image.save(f'{args.out_dir}/Filtered_{image_name}.jpg')
 
 def run():
     main(sys.argv[1:])

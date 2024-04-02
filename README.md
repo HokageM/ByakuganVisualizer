@@ -7,6 +7,12 @@ It simplifies the process of identifying disparities between images, making it i
 assurance. Additionally, it offers options for customization, which can be helpful for color-blind users.
 
 
+## Installation
+
+```bash
+pip install byakuganvisualizer
+```
+
 ## Usage 
 
 ```
