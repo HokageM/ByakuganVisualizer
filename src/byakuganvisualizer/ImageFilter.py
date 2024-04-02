@@ -51,14 +51,25 @@ class ImageFilter:
         return yellow_filtered
 
     @staticmethod
-    def adjust_for_deuteranomaly(image_array):
-        # Define color transformation matrix for Deuteranomaly
-        correction_matrix = np.array([[1.0, 0.0, 0.0],
-                                      [0.494207, 0.0, 1.24827],
-                                      [0.0, 0.0, 1.0]])
+    def correction_for_colorblindness(image_array, degree_protanomaly, degree_deuteranomaly):
+        """
+        Apply a colorblindness correction to the image data.
+        :param image_array:
+        :param degree_protanomaly:
+        :param degree_deuteranomaly:
+        :return:
+        """
+        r = image_array[..., 0]
+        g = image_array[..., 1]
+        b = image_array[..., 2]
 
-        # Apply the color correction matrix
-        adjusted_array = np.dot(image_array[..., :3], correction_matrix.T)
-        adjusted_array = np.clip(adjusted_array, 0, 255).astype(np.uint8)
+        corrected = np.copy(image_array)
+        r_corrected = (1 - degree_deuteranomaly / 2) * r + (degree_deuteranomaly / 2) * g
+        g_corrected = (degree_protanomaly / 2) * r + (1 - degree_protanomaly / 2) * g
+        b_corrected = ((degree_protanomaly / 4) * r + (degree_deuteranomaly / 4) * g +
+                       (1 - (degree_deuteranomaly + degree_protanomaly) / 4) * b)
 
-        return adjusted_array
+        corrected[..., 0] = r_corrected
+        corrected[..., 1] = g_corrected
+        corrected[..., 2] = b_corrected
+        return corrected

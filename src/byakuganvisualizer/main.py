@@ -41,7 +41,8 @@ def parse_args(args):
       :obj:`argparse.Namespace`: command line parameters namespace
     """
     parser = argparse.ArgumentParser(
-        description="ByakuganVisualizer: Tool for comparing images and highlighting differences."
+        description="ByakuganVisualizer: Tool for correcting the color palett for color blind people and highlighting "
+                    "differences of images."
     )
     parser.add_argument(
         "--version",
@@ -55,14 +56,26 @@ def parse_args(args):
              'Each tuple contains two paths to images to be compared.'
     )
     parser.add_argument(
+        '--filter',
+        choices=['red', 'blue', 'green', 'yellow'],
+        help='Filter type (red, blue, green, yellow)'
+    )
+    parser.add_argument(
         '--images',
         type=str,
         help='List of image names to be manipulated by a filter. E.g.: A,B,C,D'
     )
     parser.add_argument(
-        '--filter',
-        choices=['red', 'blue', 'green', 'yellow', 'deuteranomaly'],
-        help='Filter type (red, blue, green, yellow, deuteranomaly)'
+        '--deuteranomaly',
+        type=float,
+        default=0,
+        help='Expresses your degree of deuteranomaly, which will be used to correct the image. Default is 1.'
+    )
+    parser.add_argument(
+        '--protanomaly',
+        type=float,
+        default=0,
+        help='Expresses your degree of protanomaly, which will be used to correct the image. Default is 1.'
     )
     parser.add_argument(
         '--out_dir',
@@ -70,7 +83,6 @@ def parse_args(args):
         default='.',
         help='Output directory for the difference images'
     )
-    # TODO: option for just filtering an image
     return parser.parse_args(args)
 
 
@@ -130,9 +142,9 @@ def main(args):
             if args.filter == 'yellow':
                 rgb_array = ImageFilter.apply_yellow_filter(rgb_array)
                 image_name += '_yellow'
-            if args.filter == 'deuteranomaly':
-                rgb_array = ImageFilter.adjust_for_deuteranomaly(rgb_array)
-                image_name += '_deuteranomaly'
+            if args.protanomaly > 0 or args.deuteranomaly > 0:
+                rgb_array = ImageFilter.correction_for_colorblindness(rgb_array, args.protanomaly, args.deuteranomaly)
+                image_name += f'_deuteranomaly_{args.deuteranomaly}_protanomaly_{args.protanomaly}'
 
             filtered_image = Image.fromarray(rgb_array.astype('uint8'))
             filtered_image.save(f'{args.out_dir}/Filtered_{image_name}.jpg')
