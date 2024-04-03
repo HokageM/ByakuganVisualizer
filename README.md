@@ -148,3 +148,14 @@ byakugan_vision --diff "tests/test_images/naruto.jpg,tests/test_images/naruto_mo
 ```
 
 <img src="tests/test_images/diff/Diff_naruto_naruto_modified_yellow.jpg" style="width: 200px">
+
+## Byakugan
+
+The [Bykugan](https://naruto.fandom.com/wiki/Byakugan) from Naruto is a powerful ability that grants users the ability 
+to see through objects, detect chakra, and perceive long distances, but users are born blind, relying solely on this 
+special vision.
+
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
