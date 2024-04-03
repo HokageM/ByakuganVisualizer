@@ -1,12 +1,9 @@
 import argparse
 import sys
-import numpy as np
 import os
 
-from PIL import Image
-
 from byakuganvisualizer import __version__
-from byakuganvisualizer.ImageFilter import ImageFilter
+from byakuganvisualizer.Byakugan import Byakugan
 
 __author__ = "HokageM"
 __copyright__ = "HokageM"
@@ -93,61 +90,20 @@ def main(args):
         os.makedirs(args.out_dir)
         print(f"Output Directory: '{args.out_dir}' created.")
 
-    if args.diff:
-        for pair in args.diff:
-            pair_name = os.path.basename(pair[0]).split('.')[0] + '_' + os.path.basename(pair[1]).split('.')[0]
+    if args.diff is None and args.images is None:
+        print("No images to process.")
+        return
 
-            image1 = Image.open(pair[0])
-            image2 = Image.open(pair[1])
+    if args.diff and args.images:
+        raise ValueError("Please do not use --diff and --images at the same time.")
 
-            array1 = np.array(image1)
-            array2 = np.array(image2)
-
-            # Calculate the absolute difference between the two arrays
-            difference_array = np.abs(array1 - array2)
-
-            if args.filter == 'red':
-                difference_array = ImageFilter.apply_red_filter(difference_array)
-                pair_name += '_red'
-            if args.filter == 'blue':
-                difference_array = ImageFilter.apply_blue_filter(difference_array)
-                pair_name += '_blue'
-            if args.filter == 'green':
-                difference_array = ImageFilter.apply_green_filter(difference_array)
-                pair_name += '_green'
-            if args.filter == 'yellow':
-                difference_array = ImageFilter.apply_yellow_filter(difference_array)
-                pair_name += '_yellow'
-
-            difference_image = Image.fromarray(difference_array.astype('uint8'))
-            difference_image.save(f'{args.out_dir}/Diff_{pair_name}.jpg')
-
-    if args.images:
-        args.images = args.images.split(',')
-        for img in args.images:
-            image_name = os.path.basename(img).split('.')[0]
-
-            image = Image.open(img)
-            rgb_array = np.array(image)
-
-            if args.filter == 'red':
-                rgb_array = ImageFilter.apply_red_filter(rgb_array)
-                image_name += '_red'
-            if args.filter == 'blue':
-                rgb_array = ImageFilter.apply_blue_filter(rgb_array)
-                image_name += '_blue'
-            if args.filter == 'green':
-                rgb_array = ImageFilter.apply_green_filter(rgb_array)
-                image_name += '_green'
-            if args.filter == 'yellow':
-                rgb_array = ImageFilter.apply_yellow_filter(rgb_array)
-                image_name += '_yellow'
-            if args.protanomaly > 0 or args.deuteranomaly > 0:
-                rgb_array = ImageFilter.correction_for_colorblindness(rgb_array, args.protanomaly, args.deuteranomaly)
-                image_name += f'_deuteranomaly_{args.deuteranomaly}_protanomaly_{args.protanomaly}'
-
-            filtered_image = Image.fromarray(rgb_array.astype('uint8'))
-            filtered_image.save(f'{args.out_dir}/Filtered_{image_name}.jpg')
+    with Byakugan(args.out_dir, args.filter, args.deuteranomaly, args.protanomaly) as byakugan:
+        print("BYAKUGAN ACTIVATED!")
+        if args.diff:
+            byakugan.calculate_diffs(args.diff)
+        if args.images:
+            args.images = args.images.split(',')
+            byakugan.process_images(args.images)
 
 
 def run():
