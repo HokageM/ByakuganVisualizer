@@ -16,6 +16,8 @@ pip install byakuganvisualizer
 
 ## Usage 
 
+### Command Line Interface
+
 ```
 usage: byakugan_vision [-h] [--version] [--diff DIFF] [--filter {red,blue,green,yellow}] [--images IMAGES] [--deuteranomaly DEUTERANOMALY]
                        [--protanomaly PROTANOMALY] [--out_dir OUT_DIR]
@@ -37,9 +39,21 @@ options:
   --out_dir OUT_DIR     Output directory for the difference images
 ```
 
+### Python API
+
+Please read the API documentation for the classes `Byakugan` and `ImageFilter` for more information.
+You can simply import the classes as follows:
+
+```python
+from byakuganvisualizer.Byakugan import Byakugan
+from byakuganvisualizer.ImageFilter import ImageFilter
+```
+
+
 ## Image Correction for Color Blind People
 
 In the following examples the image is corrected for deuteranomaly and protanomaly. 
+Correction in this context means that the image is adjusted to be more distinguishable for color-blind people.
 
 **Note:** The float values for deuteranomaly and protanomaly are between 0 and 10. The default value is 1.
 The used algorithm is based on the following paper: https://arxiv.org/abs/1711.10662.

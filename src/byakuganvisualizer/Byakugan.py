@@ -55,6 +55,11 @@ class Byakugan:
         """
         for pair in diff_pairs:
             pair_name = os.path.basename(pair[0]).split('.')[0] + '_' + os.path.basename(pair[1]).split('.')[0]
+            file_extension_1 = os.path.basename(pair[0]).split('.')[1]
+            file_extension_2 = os.path.basename(pair[1]).split('.')[1]
+
+            if file_extension_1 != file_extension_2:
+                raise ValueError(f"Images must have the same file extension. {file_extension_1} != {file_extension_2}")
 
             image1 = Image.open(pair[0])
             image2 = Image.open(pair[1])
@@ -71,7 +76,7 @@ class Byakugan:
             pair_name += suffix
 
             difference_image = Image.fromarray(difference_array.astype('uint8'))
-            difference_image.save(f'{self.out_dir}/Diff_{pair_name}.jpg')
+            difference_image.save(f'{self.out_dir}/Diff_{pair_name}.{file_extension_1}')
 
     def process_images(self, images):
         """
@@ -80,7 +85,7 @@ class Byakugan:
         :return:
         """
         for img in images:
-            image_name = os.path.basename(img).split('.')[0]
+            image_name, file_extension = os.path.basename(img).split('.')
 
             image = Image.open(img)
             rgb_array = np.array(image)
@@ -89,4 +94,4 @@ class Byakugan:
             image_name += suffix
 
             filtered_image = Image.fromarray(rgb_array.astype('uint8'))
-            filtered_image.save(f'{self.out_dir}/Filtered_{image_name}.jpg')
+            filtered_image.save(f'{self.out_dir}/Filtered_{image_name}.{file_extension}')
