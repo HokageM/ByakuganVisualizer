@@ -15,7 +15,7 @@ if __name__ == "__main__":
                           "images, making it ideal for tasks like testing and quality assurance. Additionally, it "
                           "offers options for customization, which can be helpful for color-blind users.",
               long_description_content_type="text/markdown",
-              version="0.2.1"
+              version="0.2.2"
               )
     except:  # noqa
         print(
