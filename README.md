@@ -2,10 +2,64 @@
 
 <img src="logo/logo.jpeg" width="200">
 
-The ByakuganVisualizer repository hosts a Python tool designed to compare images and highlight their differences.
-It simplifies the process of identifying disparities between images, making it ideal for tasks like testing and quality 
-assurance.
-Moreover, it offers a color filter that can be used to correct images for **color-blind users**.
+**ByakuganVisualizer** is a Python tool for comparing images, highlighting visual differences, and applying color filters.
+
+I have a mix of deuteranomaly and protanomaly, which motivated me to create this repository!
+Now I can solve every colorblind test.
+
+## Features
+
+- Compare two images and generate a difference image
+- Apply red, green, blue, or yellow channel filters
+- Apply deuteranomaly and protanomaly correction
+- Process one or multiple images from the command line
+- Use the functionality directly from Python
+
+## Notes on Color Correction
+
+The deuteranomaly and protanomaly values control the strength of the correction.
+
+Example:
+
+```bash
+byakugan_vision --images "tests/test_images/naruto.jpg" --deuteranomaly 2 --protanomaly 2
+```
+
+The algorithm is based on the following paper:
+
+https://arxiv.org/abs/1711.10662
+
+Correction in this context means that the image colors are adjusted to make differences more distinguishable for people with color vision deficiencies.
+
+### Deuteranomaly Correction
+
+```bash
+byakugan_vision --images "tests/test_images/color_blind_test.jpg" --deuteranomaly 2
+```
+
+<img src="tests/test_images/filtered/Filtered_color_blind_test_deuteranomaly_2.0_protanomaly_0.0.jpg" style="width: 200px">
+
+### Protanomaly Correction
+
+```bash
+byakugan_vision --images "tests/test_images/color_blind_test.jpg" --protanomaly 2
+```
+
+<img src="tests/test_images/filtered/Filtered_color_blind_test_deuteranomaly_0.0_protanomaly_2.0.jpg" style="width: 200px">
+
+### Deuteranomaly and Protanomaly Correction
+
+```bash
+byakugan_vision --images "tests/test_images/color_blind_test.jpg" --deuteranomaly 2 --protanomaly 2
+```
+
+<img src="tests/test_images/filtered/Filtered_color_blind_test_deuteranomaly_2.0_protanomaly_2.0.jpg" style="width: 200px">
+
+```bash
+byakugan_vision --images "tests/test_images/color_blind_test.jpg" --deuteranomaly 0.5 --protanomaly 0.5
+```
+
+<img src="tests/test_images/filtered/Filtered_color_blind_test_deuteranomaly_0.5_protanomaly_0.5.jpg" style="width: 200px">
 
 
 ## Installation
@@ -14,54 +68,80 @@ Moreover, it offers a color filter that can be used to correct images for **colo
 pip install byakuganvisualizer
 ```
 
-## Usage 
+For local development:
+
+```bash
+git clone https://github.com/HokageM/ByakuganVisualizer.git
+cd ByakuganVisualizer
+pip install -e .
+```
+
+## Usage
 
 ### Command Line Interface
 
+```bash
+byakugan_vision --help
 ```
-usage: byakugan_vision [-h] [--version] [--diff DIFF] [--filter {red,blue,green,yellow}] [--images IMAGES] [--deuteranomaly DEUTERANOMALY]
-                       [--protanomaly PROTANOMALY] [--out_dir OUT_DIR]
 
-ByakuganVisualizer: Tool for correcting the color palett for color blind people and highlighting differences of images.
+```text
+usage: byakugan_vision [-h] [--version]
+                       (--diff DIFF | --images IMAGES)
+                       [--filter {red,blue,green,yellow}]
+                       [--deuteranomaly DEUTERANOMALY]
+                       [--protanomaly PROTANOMALY]
+                       [--out_dir OUT_DIR]
+
+ByakuganVisualizer: Tool for correcting the color palette for color-blind users
+and highlighting differences between images.
 
 options:
   -h, --help            show this help message and exit
   --version             show program's version number and exit
-  --diff DIFF           String containing a list of tuples "Path_To_Image1a,Path_To_Image2a;Path_To_Image1b,Path_To_Image2b...". Each tuple
-                        contains two paths to images to be compared.
+
+processing mode:
+  --diff DIFF           Image pairs to compare.
+                        Format:
+                        "Path_To_Image1a,Path_To_Image2a;Path_To_Image1b,Path_To_Image2b"
+  --images IMAGES       Comma-separated list of image paths to process.
+                        Example:
+                        "image_a.jpg,image_b.jpg,image_c.jpg"
+
+filter options:
   --filter {red,blue,green,yellow}
-                        Filter type (red, blue, green, yellow)
-  --images IMAGES       List of image names to be manipulated by a filter. E.g.: A,B,C,D
+                        Filter type to apply.
   --deuteranomaly DEUTERANOMALY
-                        Expresses your degree of deuteranomaly, which will be used to correct the image. Default is 1.
+                        Degree of deuteranomaly correction. Default is 0.
   --protanomaly PROTANOMALY
-                        Expresses your degree of protanomaly, which will be used to correct the image. Default is 1.
-  --out_dir OUT_DIR     Output directory for the difference images
+                        Degree of protanomaly correction. Default is 0.
+
+output options:
+  --out_dir OUT_DIR     Output directory for generated images. Default is current directory.
 ```
 
-### Python API
+`--diff` and `--images` are mutually exclusive. Use one or the other.
 
-Please read the API documentation for the classes `Byakugan` and `ImageFilter` for more information.
-You can simply import the classes as follows:
+## Examples
 
-```python
-from byakuganvisualizer.Byakugan import Byakugan
-from byakuganvisualizer.ImageFilter import ImageFilter
+### Filter an Image
+
+```bash
+byakugan_vision --images "tests/test_images/naruto.jpg" --filter red
 ```
 
+Output:
 
-## Image Correction for Color Blind People
+```text
+Filtered_naruto_red.jpg
+```
 
-In the following examples the image is corrected for deuteranomaly and protanomaly. 
-Correction in this context means that the image is adjusted to be more distinguishable for color-blind people.
+<img src="tests/test_images/filtered/Filtered_naruto_red.jpg" style="width: 200px">
 
-**Note:** The float values for deuteranomaly and protanomaly are between 0 and 10. The default value is 1.
-The used algorithm is based on the following paper: https://arxiv.org/abs/1711.10662.
+### Process Multiple Images
 
-The image used in the example is from the following source:
-https://www.anime2you.de/news/606180/naruto-feiert-20-anime-jubilaeum/
-
-<img src="tests/test_images/naruto.jpg" style="width: 200px">
+```bash
+byakugan_vision --images "tests/test_images/naruto.jpg,tests/test_images/naruto_modified.jpg" --filter blue
+```
 
 ### Deuteranomaly Correction
 
@@ -87,25 +167,16 @@ byakugan_vision --images "tests/test_images/naruto.jpg" --deuteranomaly 2 --prot
 
 <img src="tests/test_images/filtered/Filtered_naruto_deuteranomaly_2_protanomaly_2.jpg" style="width: 200px">
 
-
 ```bash
 byakugan_vision --images "tests/test_images/naruto.jpg" --deuteranomaly 0.5 --protanomaly 0.5
 ```
 
 <img src="tests/test_images/filtered/Filtered_naruto_deuteranomaly_0.5_protanomaly_0.5.jpg" style="width: 200px">
 
-### Filter an Image
+## Differences Between Images
 
-```bash
-byakugan_vision --images "tests/test_images/naruto.jpg" --filter red
-```
+The left image used in this example is from the following source:
 
-<img src="tests/test_images/filtered/Filtered_naruto_red.jpg" style="width: 200px">
-
-
-## Differences between images
-
-The left image used in the example is from the following source:
 https://www.anime2you.de/news/606180/naruto-feiert-20-anime-jubilaeum/
 
 <div style="display: flex; flex-direction: row;">
@@ -113,63 +184,101 @@ https://www.anime2you.de/news/606180/naruto-feiert-20-anime-jubilaeum/
     <img src="tests/test_images/naruto_modified.jpg" alt="Second Image" style="width: 200px; margin-left: 5px;">
 </div>
 
-### Difference with no Filter
+### Difference Without Filter
 
 ```bash
 byakugan_vision --diff "tests/test_images/naruto.jpg,tests/test_images/naruto_modified.jpg" --out_dir tests/test_images/diff
 ```
 
-<img src="tests/test_images/diff/Diff_naruto_naruto_modified.jpg" style="width: 200px">
+Output:
 
-Note: The output depends on the order of the images in the tuple. The first image is subtracted from the second image.
-That is why the following command results in a different output:
-
-```bash
-byakugan_vision --diff "tests/test_images/naruto_modified.jpg,tests/test_images/naruto.jpg" --out_dir tests/test_images/diff
+```text
+Diff_naruto_naruto_modified.jpg
 ```
 
-<img src="tests/test_images/diff/Diff_naruto_modified_naruto.jpg" style="width: 200px">
+<img src="tests/test_images/diff/Diff_naruto_naruto_modified.jpg" style="width: 200px">
 
-
-### Red Filtered Difference
+### Difference With Filter
 
 ```bash
 byakugan_vision --diff "tests/test_images/naruto.jpg,tests/test_images/naruto_modified.jpg" --filter red --out_dir tests/test_images/diff
 ```
 
-<img src="tests/test_images/diff/Diff_naruto_naruto_modified_red.jpg" style="width: 200px">
+Output:
 
-### Blue Filtered Difference
-
-```bash
-byakugan_vision --diff "tests/test_images/naruto.jpg,tests/test_images/naruto_modified.jpg" --filter blue --out_dir tests/test_images/diff
+```text
+Diff_naruto_naruto_modified_red.jpg
 ```
 
-<img src="tests/test_images/diff/Diff_naruto_naruto_modified_blue.jpg" style="width: 200px">
+## Python API
 
-### Green Filtered Difference
+The refactored API uses `ByakuganProcessor` as the main processing class:
 
-```bash
-byakugan_vision --diff "tests/test_images/naruto.jpg,tests/test_images/naruto_modified.jpg" --filter green --out_dir tests/test_images/diff
+```python
+from byakuganvisualizer.processor import ByakuganProcessor
+
+processor = ByakuganProcessor(
+    out_dir="tests/test_images/filtered",
+    filter_name="red",
+)
+
+processor.process_image("tests/test_images/naruto.jpg")
 ```
 
-<img src="tests/test_images/diff/Diff_naruto_naruto_modified_green.jpg" style="width: 200px">
+### Process Multiple Images
 
-### Yellow Filtered Difference
+```python
+from byakuganvisualizer.processor import ByakuganProcessor
 
-```bash
-byakugan_vision --diff "tests/test_images/naruto.jpg,tests/test_images/naruto_modified.jpg" --filter yellow --out_dir tests/test_images/diff
+processor = ByakuganProcessor(
+    out_dir="tests/test_images/filtered",
+    filter_name="blue",
+)
+
+processor.process_images(
+    [
+        "tests/test_images/naruto.jpg",
+        "tests/test_images/naruto_modified.jpg",
+    ]
+)
 ```
 
-<img src="tests/test_images/diff/Diff_naruto_naruto_modified_yellow.jpg" style="width: 200px">
+### Calculate a Difference Image
+
+```python
+from byakuganvisualizer.processor import ByakuganProcessor
+
+processor = ByakuganProcessor(out_dir="tests/test_images/diff")
+
+processor.calculate_diff(
+    "tests/test_images/naruto.jpg",
+    "tests/test_images/naruto_modified.jpg",
+)
+```
+
+### Calculate Multiple Difference Images
+
+```python
+from byakuganvisualizer.processor import ByakuganProcessor
+
+processor = ByakuganProcessor(out_dir="tests/test_images/diff")
+
+processor.calculate_diffs(
+    [
+        (
+            "tests/test_images/naruto.jpg",
+            "tests/test_images/naruto_modified.jpg",
+        ),
+    ]
+)
+```
 
 ## Byakugan
 
-The [Bykugan](https://naruto.fandom.com/wiki/Byakugan) from Naruto is a powerful ability that grants users the ability 
-to see through objects, detect chakra, and perceive long distances, but users are born blind, relying solely on this 
-special vision.
+The [Byakugan](https://naruto.fandom.com/wiki/Byakugan) from *Naruto* is a powerful ability that allows users to see through objects, detect chakra, and perceive long distances.
 
+This project uses the name as a metaphor for making visual differences easier to see.
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.

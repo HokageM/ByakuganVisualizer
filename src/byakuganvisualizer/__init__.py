@@ -1,16 +1,17 @@
-import sys
+"""ByakuganVisualizer package."""
 
-if sys.version_info[:2] >= (3, 8):
-    # TODO: Import directly (no need for conditional) when `python_requires = >= 3.8`
-    from importlib.metadata import PackageNotFoundError, version  # pragma: no cover
-else:
-    from importlib_metadata import PackageNotFoundError, version  # pragma: no cover
+from __future__ import annotations
 
 try:
-    # Change here if project is renamed and does not equal the package name
-    dist_name = "ByakuganVisualizer"
-    __version__ = version(dist_name)
+    from importlib.metadata import PackageNotFoundError, version
+except ImportError:  # pragma: no cover
+    from importlib_metadata import PackageNotFoundError, version
+
+try:
+    __version__ = version("ByakuganVisualizer")
 except PackageNotFoundError:  # pragma: no cover
     __version__ = "unknown"
-finally:
-    del version, PackageNotFoundError
+
+from byakuganvisualizer.processor import ByakuganProcessor
+
+__all__ = ["ByakuganProcessor", "__version__"]
