@@ -7,6 +7,8 @@
 I have a mix of deuteranomaly and protanomaly, which motivated me to create this repository!
 Now I can solve every colorblind test.
 
+A live demo of the colorblind correction can be found here [ByakuganVisualizer](https://huggingface.co/spaces/HokageM/ByakuganVisualizer)
+
 ## Features
 
 - Compare two images and generate a difference image
